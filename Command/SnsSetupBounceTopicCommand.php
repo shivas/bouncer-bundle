@@ -1,6 +1,8 @@
 <?php
 namespace Shivas\BouncerBundle\Command;
 
+use Shivas\BouncerBundle\Compatibility\ChoiceQuestion;
+use Shivas\BouncerBundle\Compatibility\QuestionHelper;
 use Shivas\BouncerBundle\Model\Topic;
 use Shivas\BouncerBundle\Model\TopicRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -8,7 +10,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class SnsSetupBounceTopicCommand extends ContainerAwareCommand
 {
@@ -36,6 +37,12 @@ class SnsSetupBounceTopicCommand extends ContainerAwareCommand
         // fetch identities
         $response = $sesClient->listIdentities();
         $identities = $response->get('Identities');
+
+        $helperSet = $this->getHelperSet();
+        if (!$helperSet->has('question')) {
+            $helperSet->set(new QuestionHelper(), 'question');
+        }
+
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
             'Please select identities to hook to: (comma separated numbers, default: all)',

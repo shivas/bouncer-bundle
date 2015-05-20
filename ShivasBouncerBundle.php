@@ -24,7 +24,8 @@ class ShivasBouncerBundle extends Bundle
                     array('shivas_bouncer.model_manager_name'),
                     'shivas_bouncer.backend_orm',
                     array('ShivasBouncerBundle' => 'Shivas\BouncerBundle\Model')
-                ));
+                )
+            );
         }
     }
 }
