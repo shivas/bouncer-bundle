@@ -16,16 +16,16 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
+        "php": "~5.6",
         "symfony/framework-bundle": "~2.5",
-        "aws/aws-sdk-php": "~2.7",
+        "aws/aws-sdk-php": "^3.2",
         "symfony/swiftmailer-bundle": "~2.3"
     },
     "require-dev": {
         "doctrine/common": "~2.4",
         "symfony/yaml": "~2.5",
 	    "symfony/console": "~2.5",
-        "phpunit/phpunit": "~4.5"
+        "phpunit/phpunit": "~5"
     },
     "autoload": {
         "psr-4": { "Shivas\\BouncerBundle\\": "" }
