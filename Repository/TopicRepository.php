@@ -1,8 +1,8 @@
 <?php
-namespace Shivas\BouncerBundle\Repository;
+namespace SerendipityHQ\Bundle\AwsSesBouncerBundle\Repository;
 
-use Shivas\BouncerBundle\Model\Topic;
-use Shivas\BouncerBundle\Model\TopicRepositoryInterface;
+use SerendipityHQ\Bundle\AwsSesBouncerBundle\Model\Topic;
+use SerendipityHQ\Bundle\AwsSesBouncerBundle\Model\TopicRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
 class TopicRepository extends EntityRepository implements TopicRepositoryInterface

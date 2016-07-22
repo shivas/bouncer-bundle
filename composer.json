@@ -28,7 +28,7 @@
         "phpunit/phpunit": "~5"
     },
     "autoload": {
-        "psr-4": { "Shivas\\BouncerBundle\\": "" }
+        "psr-4": { "SerendipityHQ\\Bundle\\AwsSesBouncerBundle\\": "" }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

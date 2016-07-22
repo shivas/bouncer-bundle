@@ -1,5 +1,5 @@
 <?php
-namespace Shivas\BouncerBundle\Service;
+namespace SerendipityHQ\Bundle\AwsSesBouncerBundle\Service;
 
 use Aws\Credentials\Credentials;
 use Aws\Ses\SesClient;
