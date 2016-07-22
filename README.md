@@ -1,6 +1,8 @@
 Bouncer bundle
 ==============
 
+Forked from [BouncerBundle](https://github.com/shivas/bouncer-bundle).
+
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/56ca074b-524c-4ebe-84f4-f7d0772814b0/mini.png)](https://insight.sensiolabs.com/projects/56ca074b-524c-4ebe-84f4-f7d0772814b0)
 [![Build Status](https://travis-ci.org/shivas/bouncer-bundle.svg)](https://travis-ci.org/shivas/bouncer-bundle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/shivas/bouncer-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/shivas/bouncer-bundle/?branch=master)
@@ -10,6 +12,12 @@ Symfony2 bundle to automate AWS SES users using swiftmailer to filter out bounci
 
 AWS SES users know, if you get big amount of Bouncing emails, AWS will send you into probation period.
 In some cases, there is no easy way to solve issue. This bundle solves problem transparently filtering recipients lists trough own database built by listening on AWS SNS Bounce topic that it creates and hooks to your identity.
+
+Useful Links:
+=============
+
+- [How to handle Bounces and Complaints](http://sesblog.amazon.com/post/TxJE1JNZ6T9JXK/-Handling-span-class-matches-Bounces-span-and-Complaints.pdf)
+- [Some sample code with PHP](https://forums.aws.amazon.com/message.jspa?messageID=202798#202798)
 
 Requirements:
 =============
@@ -53,7 +61,7 @@ class AppKernel extends Kernel
         $bundles = array(
             // ...
 
-             new Shivas\BouncerBundle\ShivasBouncerBundle(),
+             new SerendipityHQ\Bundle\AwsSesBouncerBundle\ShivasBouncerBundle(),
         );
 
         // ...
@@ -66,15 +74,44 @@ class AppKernel extends Kernel
 Step 3: Add configuration
 -------------------------
 
+First, add the configuration parameters to `parameters.yml`:
+
+```yaml
+parameters:
+    ...
+    amazon.aws.key: 'your_key'
+    amazon.aws.secret: 'your_secret'
+    amazon.aws.eu_region: 'eu-west-1' # You can omit this. If omitted, the bundle sets this to us-east-1
+    amazon.ses.version: '2010-12-01' # You can omit this. If omitted, the bundle sets this to 2010-12-01
+    amazon.sns.version: '2010-03-31' # You can omit this. If omitted, the bundle sets this to 2010-03-31
+```
+
+NOTE: Do not forget to add those parameters also to your `parameters.dist.yml`!
+ 
+Then create the `Credentials` service needed by the `AWS\Client`:
+ 
+```yaml
+ services:
+     ...
+     client.amazon.credentials:
+         class: Aws\Credentials\Credentials
+         arguments: ["%amazon.aws.key%", "%amazon.aws.secret%"]
+```
+
+Then, use those parameters
+
 ```yaml
 # Default configuration for "ShivasBouncerBundle"
-shivas_bouncer:
-    db_driver:            orm # currently only ORM supported
-    model_manager_name:   null # if using custom ORM model manager, provide name, otherwise leave as null 
-    aws_api_key:
-        key:                  ~ # Required, your AWS API KEY
-        secret:               ~ # Required, your AWS API SECRET
-        region:               us-east-1 # Required, region of AWS to use
+aws_ses_bouncer:
+    db_driver: orm # currently only ORM supported
+    model_manager_name: null # if using custom ORM model manager, provide name, otherwise leave as null
+    aws_config:
+        # Here the NAME (not the service itself!) of the credentials service set in the previous step.
+        # If you omit this, the bundle looks for client.aws.credentials service.
+        credentials_service_name: 'client.amazon.credentials'
+        region: "%amazon.aws.eu_region%" # You can omit this. If omitted, the bundle sets this to us-east-1
+        ses_version: "%amazon.ses.version%" # You can omit this. If omitted, the bundle sets this to 2010-12-01
+        sns_version: "%amazon.sns.version%" # You can omit this. If omitted, the bundle sets this to 2010-03-31
     bounce_endpoint:
         route_name:           _shivasbouncerbundle_bounce_endpoint
         protocol:             HTTP # HTTP or HTTPS
@@ -84,16 +121,18 @@ shivas_bouncer:
         filter_not_permanent: false # if false, all temporary bounces will not make that address to be filtered forever
         mailer_name:          # array of mailer names where to register filtering plugin
             - default
- ```
- 
- Add routing file for bounce endpoint (feel free to edit prefix)
+```
+
+Add routing file for bounce endpoint (feel free to edit prefix)
  
 ```yaml
 # app/config/routing.yml
 bouncer:
-    resource: @ShivasBouncerBundle/Resources/config/routing.yml
+    resource: '@ShivasBouncerBundle/Resources/config/routing.yml'
     prefix: /aws/endpoints
 ```
+
+
  
 Step 4: Update your database schema
 -----------------------------------

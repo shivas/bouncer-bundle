@@ -1,5 +1,5 @@
 <?php
-namespace Shivas\BouncerBundle\Model;
+namespace SerendipityHQ\Bundle\AwsSesBouncerBundle\Model;
 
 use Symfony\Component\HttpFoundation\Request;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Shivas\BouncerBundle\DependencyInjection;
+namespace SerendipityHQ\Bundle\AwsSesBouncerBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -13,7 +13,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('shivas_bouncer');
+        $rootNode = $treeBuilder->root('aws_ses_bouncer');
 
         $supportedDrivers = array('orm');
         $supportedProtocols = array('HTTP', 'HTTPS', 'http', 'https');
@@ -31,12 +31,13 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                 ->end()
                 ->scalarNode('model_manager_name')->defaultNull()->end()
-                ->arrayNode('aws_api_key')
+                ->arrayNode('aws_config')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('key')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('secret')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('credentials_service_name')->defaultValue('client.aws.credentials')->cannotBeEmpty()->end()
                         ->scalarNode('region')->isRequired()->defaultValue('us-east-1')->cannotBeEmpty()->end()
+                        ->scalarNode('ses_version')->defaultValue('2010-12-01')->cannotBeEmpty()->end()
+                        ->scalarNode('sns_version')->defaultValue('2010-03-31')->cannotBeEmpty()->end()
                     ->end()
                 ->end()
                 ->arrayNode('bounce_endpoint')

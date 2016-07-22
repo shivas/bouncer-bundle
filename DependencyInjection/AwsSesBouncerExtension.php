@@ -1,13 +1,16 @@
 <?php
 
-namespace Shivas\BouncerBundle\DependencyInjection;
+namespace SerendipityHQ\Bundle\AwsSesBouncerBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
-class ShivasBouncerExtension extends Extension
+/**
+ * {@inheritdoc}
+ */
+class AwsSesBouncerExtension extends Extension
 {
     /**
      * {@inheritdoc}
@@ -27,18 +30,18 @@ class ShivasBouncerExtension extends Extension
             $loader->load('filter.xml');
 
             $mailers = $config['filter']['mailer_name'];
-            $filter = $container->getDefinition('shivas_bouncer.swift_mailer.filter');
+            $filter = $container->getDefinition('aws_ses_bouncer.swift_mailer.filter');
             foreach ($mailers as $mailer) {
                 $filter->addTag(sprintf('swiftmailer.%s.plugin', $mailer));
             }
         }
 
-        $container->setParameter(sprintf('shivas_bouncer.backend_%s', $config['db_driver']), true);
-        $container->setParameter('shivas_bouncer.driver', $config['db_driver']);
-        $container->setParameter('shivas_bouncer.manager_name', $config['model_manager_name']);
-        $container->setParameter('shivas_bouncer.bounce_endpoint', $config['bounce_endpoint']);
-        $container->setParameter('shivas_bouncer.filter', $config['filter']);
-        $container->setParameter('shivas_bouncer.filter.filter_not_permanent', $config['filter']['filter_not_permanent']);
-        $container->setParameter('shivas_bouncer.aws_api_key', $config['aws_api_key']);
+        $container->setParameter(sprintf('aws_ses_bouncer.backend_%s', $config['db_driver']), true);
+        $container->setParameter('aws_ses_bouncer.driver', $config['db_driver']);
+        $container->setParameter('aws_ses_bouncer.manager_name', $config['model_manager_name']);
+        $container->setParameter('aws_ses_bouncer.bounce_endpoint', $config['bounce_endpoint']);
+        $container->setParameter('aws_ses_bouncer.filter', $config['filter']);
+        $container->setParameter('aws_ses_bouncer.filter.filter_not_permanent', $config['filter']['filter_not_permanent']);
+        $container->setParameter('aws_ses_bouncer.aws_config', $config['aws_config']);
     }
 }

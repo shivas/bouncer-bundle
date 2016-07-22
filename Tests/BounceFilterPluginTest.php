@@ -1,5 +1,5 @@
 <?php
-use Shivas\BouncerBundle\Plugin\BouncerFilterPlugin;
+use SerendipityHQ\Bundle\AwsSesBouncerBundle\Plugin\BouncerFilterPlugin;
 
 class BounceFilterPluginTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,7 +11,7 @@ class BounceFilterPluginTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->bounced = $this->getMockBuilder('Shivas\BouncerBundle\Model\Bounce')->disableOriginalConstructor()->getMock();
+        $this->bounced = $this->getMockBuilder('SerendipityHQ\Bundle\AwsSesBouncerBundle\Model\Bounce')->disableOriginalConstructor()->getMock();
 
         $map = array(
             array('bounced@example.com', $this->bounced),
@@ -23,18 +23,18 @@ class BounceFilterPluginTest extends \PHPUnit_Framework_TestCase
         $recipientsCc = array('valid@example.com' => null, 'bounced@example.com' => null, 'valid2@example.com' => null);
         $recipientsBcc = null;
 
-        $this->bounceRepo = $this->getMock('Shivas\BouncerBundle\Model\BounceRepositoryInterface');
+        $this->bounceRepo = $this->createMock('SerendipityHQ\Bundle\AwsSesBouncerBundle\Model\BounceRepositoryInterface');
         $this->bounceRepo->expects($this->any())
             ->method('findBounceByEmail')
             ->will($this->returnValueMap($map));
 
-        $this->om = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $this->om = $this->createMock('Doctrine\Common\Persistence\ObjectManager');
         $this->om
             ->expects($this->once())
             ->method('getRepository')
             ->willReturn($this->bounceRepo);
 
-        $this->message = $this->getMock('Swift_Mime_Message');
+        $this->message = $this->createMock('Swift_Mime_Message');
 
         $this->message
             ->expects($this->once())

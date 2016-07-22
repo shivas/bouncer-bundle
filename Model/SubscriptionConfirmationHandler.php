@@ -1,10 +1,10 @@
 <?php
-namespace Shivas\BouncerBundle\Model;
+namespace SerendipityHQ\Bundle\AwsSesBouncerBundle\Model;
 
 use Aws\Sns\MessageValidator\Message;
 use Aws\Sns\MessageValidator\MessageValidator;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Shivas\BouncerBundle\Service\AwsClientFactory;
+use SerendipityHQ\Bundle\AwsSesBouncerBundle\Service\AwsClientFactory;
 use Symfony\Component\HttpFoundation\Request;
 
 class SubscriptionConfirmationHandler implements BouncerHandlerInterface
