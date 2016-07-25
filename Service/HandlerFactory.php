@@ -2,12 +2,8 @@
 
 namespace SerendipityHQ\Bundle\AwsSesMonitorBundle\Service;
 
-use Doctrine\Common\Persistence\ObjectManager;
+
 use Doctrine\ORM\EntityManager;
-use SerendipityHQ\Bundle\AwsSesMonitorBundle\Model\MonitorHandlerInterface;
-use SerendipityHQ\Bundle\AwsSesMonitorBundle\Model\NoopHandler;
-use SerendipityHQ\Bundle\AwsSesMonitorBundle\Model\NotificationHandler;
-use SerendipityHQ\Bundle\AwsSesMonitorBundle\Model\SubscriptionConfirmationHandler;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -38,41 +34,42 @@ class HandlerFactory
     /**
      * @param Request $request
      *
-     * @return MonitorHandlerInterface
+     * @return HandlerInterface
      */
     public function buildBouncesHandler(Request $request)
     {
-        return $this->buildHandler($request);
+        return $this->buildHandler($request, 'Topic');
     }
 
     /**
      * @param Request $request
      *
-     * @return MonitorHandlerInterface
+     * @return HandlerInterface
      */
     public function buildComplaintsHandler(Request $request)
     {
-        return $this->buildHandler($request);
+        return $this->buildHandler($request, 'Complaint');
     }
 
     /**
      * @param Request $request
+     * @param string $repoName The name of the repository to load
      *
-     * @return MonitorHandlerInterface
+     * @return HandlerInterface
      */
-    public function buildHandler(Request $request)
+    public function buildHandler(Request $request, $repoName)
     {
         $headerType = $request->headers->get('x-amz-sns-message-type');
 
         switch ($headerType) {
             case NotificationHandler::HEADER_TYPE:
                 return new NotificationHandler(
-                    $this->_em->getRepository('AwsSesMonitorBundle:Bounce')
+                    $this->_em->getRepository('AwsSesMonitorBundle:' . $repoName)
                 );
 
             case SubscriptionConfirmationHandler::HEADER_TYPE:
                 return new SubscriptionConfirmationHandler(
-                    $this->_em->getRepository('AwsSesMonitorBundle:Topic'),
+                    $this->_em->getRepository('AwsSesMonitorBundle:' . $repoName),
                     $this->awsFactory
                 );
 
