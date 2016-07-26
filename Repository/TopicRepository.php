@@ -1,23 +1,29 @@
 <?php
-namespace Shivas\BouncerBundle\Repository;
 
-use Shivas\BouncerBundle\Model\Topic;
-use Shivas\BouncerBundle\Model\TopicRepositoryInterface;
+namespace SerendipityHQ\Bundle\AwsSesMonitorBundle\Repository;
+
+use SerendipityHQ\Bundle\AwsSesMonitorBundle\Model\Topic;
+use SerendipityHQ\Bundle\AwsSesMonitorBundle\Model\TopicRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * {@inheritdoc}
+ */
 class TopicRepository extends EntityRepository implements TopicRepositoryInterface
 {
     /**
      * @param $topicArn
-     * @return Topic|null
+     *
+     * @return Topic|null|object
      */
     public function getTopicByArn($topicArn)
     {
-        return $this->findOneBy(array('topicArn' => $topicArn));
+        return $this->findOneBy(['topicArn' => $topicArn]);
     }
 
     /**
      * @param Topic $topic
+     *
      * @return mixed
      */
     public function save(Topic $topic)
@@ -28,6 +34,7 @@ class TopicRepository extends EntityRepository implements TopicRepositoryInterfa
 
     /**
      * @param Topic $topic
+     *
      * @return mixed
      */
     public function remove(Topic $topic)

@@ -1,131 +1,51 @@
-Bouncer bundle
-==============
+[![Latest Stable Version](https://poser.pugx.org/serendipity_hq/aws-ses-monitor-bundle/v/stable.png)](https://packagist.org/packages/serendipity_hq/aws-ses-monitor-bundle)
+[![Build Status](https://travis-ci.org/Aerendir/aws-ses-monitor-bundle.svg?branch=master)](https://travis-ci.org/Aerendir/aws-ses-monitor-bundle)
+[![Total Downloads](https://poser.pugx.org/serendipity_hq/aws-ses-monitor-bundle/downloads.svg)](https://packagist.org/packages/serendipity_hq/aws-ses-monitor-bundle)
+[![License](https://poser.pugx.org/serendipity_hq/aws-ses-monitor-bundle/license.svg)](https://packagist.org/packages/serendipity_hq/aws-ses-monitor-bundle)
+[![Code Climate](https://codeclimate.com/github/Aerendir/aws-ses-monitor-bundle/badges/gpa.svg)](https://codeclimate.com/github/Aerendir/aws-ses-monitor-bundle)
+[![Test Coverage](https://codeclimate.com/github/Aerendir/aws-ses-monitor-bundle/badges/coverage.svg)](https://codeclimate.com/github/Aerendir/aws-ses-monitor-bundle)
+[![Issue Count](https://codeclimate.com/github/Aerendir/aws-ses-monitor-bundle/badges/issue_count.svg)](https://codeclimate.com/github/Aerendir/aws-ses-monitor-bundle)
+[![StyleCI](https://styleci.io/repos/63937012/shield)](https://styleci.io/repos/63937012)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/4c45c317-28c4-40ef-9a1b-01af44b77327/mini.png)](https://insight.sensiolabs.com/projects/4c45c317-28c4-40ef-9a1b-01af44b77327)
+[![Dependency Status](https://www.versioneye.com/user/projects/579355b8ad9529003b1d4f7c/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/579355b8ad9529003b1d4f7c)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/56ca074b-524c-4ebe-84f4-f7d0772814b0/mini.png)](https://insight.sensiolabs.com/projects/56ca074b-524c-4ebe-84f4-f7d0772814b0)
-[![Build Status](https://travis-ci.org/shivas/bouncer-bundle.svg)](https://travis-ci.org/shivas/bouncer-bundle)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/shivas/bouncer-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/shivas/bouncer-bundle/?branch=master)
-[![Total Downloads](https://img.shields.io/packagist/dt/shivas/bouncer-bundle.svg?style=flat)](https://packagist.org/packages/shivas/bouncer-bundle)
+AWS SES MONITOR BUNDLE
+======================
 
-Symfony2 bundle to automate AWS SES users using swiftmailer to filter out bouncing email recipients inside project.
+Forked from [BouncerBundle](https://github.com/shivas/bouncer-bundle).
 
-AWS SES users know, if you get big amount of Bouncing emails, AWS will send you into probation period.
-In some cases, there is no easy way to solve issue. This bundle solves problem transparently filtering recipients lists trough own database built by listening on AWS SNS Bounce topic that it creates and hooks to your identity.
+AWS SES Monitor Bundle for Symfony 2 automates the filtering of [bounced and complined e-mails sent through AWS SES](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/best-practices-bounces-complaints.html).
 
-Requirements:
+AWS SES can give you notifications about bounced or complained e-mails both [via e-mail](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/notifications-via-email.html)
+ or [via the AWS SNS service](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/notifications-via-sns.html).
+
+Managing these notifications it is possible to know to which e-mails we should not send other e-mails.
+
+**This bundle helps you setting up the automatic handling of notifications via SNS.**
+
+How AWS SES Monitor Bundle integrates with AWS SNS
+--------------------------------------------------
+
+Using AWS SES Monitor Bundle you can, using the console of your Symfony's App, create in AWS Simple Notifications Service a topic for bounced emails and one for complained emails and automatically subscribe your app identity to that topics.
+
+The bundle exposes some endpoints called by AWS Simple Email Service when an e-mail is bounced or complained. When those endpoints are called, AWS SES Monitor Bundle persists these emails in the database.
+
+The SwiftMailer plugin included reads these e-mails and automatically disable the sending of e-mails to those addresses. 
+
+The entire procedure is automated by the bundle in a really simple and easy way.
+
+Requirements
+------------
+
+1. ^PHP 5.6|^7.0
+
+DOCUMENTATION
 =============
 
-1. You use AWS SES to send your emails
-2. You have AWS API key
-3. You have confirmed email identity (email or whole domain)
+You can read how to install, configure, test and use AWS SES Monitor Bundle in the [documentation](Resources/docs/Index.md).
 
-Installation
-============
+Useful Links
+------------
 
-Step 1: Download the Bundle
----------------------------
-
-Open a command console, enter your project directory and execute the
-following command to download the latest stable version of this bundle:
-
-```bash
-$ composer require shivas/bouncer-bundle "~0.1"
-```
-
-This command requires you to have Composer installed globally, as explained
-in the [installation chapter](https://getcomposer.org/doc/00-intro.md)
-of the Composer documentation.
-
-Step 2: Enable the Bundle
--------------------------
-
-Then, enable the bundle by adding the following line in the `app/AppKernel.php`
-file of your project:
-
-```php
-<?php
-// app/AppKernel.php
-
-// ...
-class AppKernel extends Kernel
-{
-    public function registerBundles()
-    {
-        $bundles = array(
-            // ...
-
-             new Shivas\BouncerBundle\ShivasBouncerBundle(),
-        );
-
-        // ...
-    }
-
-    // ...
-}
-```
-
-Step 3: Add configuration
--------------------------
-
-```yaml
-# Default configuration for "ShivasBouncerBundle"
-shivas_bouncer:
-    db_driver:            orm # currently only ORM supported
-    model_manager_name:   null # if using custom ORM model manager, provide name, otherwise leave as null 
-    aws_api_key:
-        key:                  ~ # Required, your AWS API KEY
-        secret:               ~ # Required, your AWS API SECRET
-        region:               us-east-1 # Required, region of AWS to use
-    bounce_endpoint:
-        route_name:           _shivasbouncerbundle_bounce_endpoint
-        protocol:             HTTP # HTTP or HTTPS
-        host:                 localhost.local # hostname of your project when in production
-    filter:
-        enabled:              true # if false, no filtering of bounced recipients will happen
-        filter_not_permanent: false # if false, all temporary bounces will not make that address to be filtered forever
-        mailer_name:          # array of mailer names where to register filtering plugin
-            - default
- ```
- 
- Add routing file for bounce endpoint (feel free to edit prefix)
- 
-```yaml
-# app/config/routing.yml
-bouncer:
-    resource: @ShivasBouncerBundle/Resources/config/routing.yml
-    prefix: /aws/endpoints
-```
- 
-Step 4: Update your database schema
------------------------------------
-
-```
-$ php app/console doctrine:schema:update --force
-```
- 
-Step 5: Setup subscription to Bounce topic
-------------------------------------------
-
-Run in console:
-```
-./app/console swiftmailer:sns:setup-bounce-topic Bounce
-```
-
-This will use your AWS keys to fetch available identities, and provide you option to choose what identities to subscribe to.
-"Bounce" in console is name of topic to setup (Naming rules should follow AWS naming rules for topics)
-
-What will happen:
-
-1. Bounce topic will be created
-2. All chosen identities will be configured to send Bounce notifications to that topic
-3. Your project url will be provided as HTTP or HTTPS (configuration) endpoint for AWS
-4. Automatic subscription confirmation will occur on AWS request to confirm (if your endpoint is reachable)
-
-Contribute
-----------
-
-Contribute trough issues or pull request. 
-
-Todo
-----
-
-Mapping for MongoDB and other supported databases by Doctrine
+- [How to handle Bounces and Complaints](http://sesblog.amazon.com/post/TxJE1JNZ6T9JXK/-Handling-span-class-matches-Bounces-span-and-Complaints.pdf)
+- [Some sample code with PHP](https://forums.aws.amazon.com/message.jspa?messageID=202798#202798)

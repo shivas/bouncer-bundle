@@ -1,10 +1,6 @@
 aws_ses_monitor:
     aws_config:
         credentials_service_name: 'test'
-    mailers:
-        - default
-        - second
-        - third
     bounces:
         topic:
             endpoint:

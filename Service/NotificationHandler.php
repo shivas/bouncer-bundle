@@ -1,12 +1,19 @@
 <?php
-namespace Shivas\BouncerBundle\Model;
 
-use Aws\Sns\MessageValidator\Message;
-use Aws\Sns\MessageValidator\MessageValidator;
+namespace SerendipityHQ\Bundle\AwsSesMonitorBundle\Service;
+
+use Aws\Credentials\Credentials;
+use Aws\Sns\Message;
+use Aws\Sns\MessageValidator;
 use Doctrine\Common\Persistence\ObjectRepository;
+use SerendipityHQ\Bundle\AwsSesMonitorBundle\Model\Bounce;
+use SerendipityHQ\Bundle\AwsSesMonitorBundle\Model\BounceRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class NotificationHandler implements BouncerHandlerInterface
+/**
+ * Handles notifications.
+ */
+class NotificationHandler implements HandlerInterface
 {
     const HEADER_TYPE = 'Notification';
     const MESSAGE_TYPE_SUBSCRIPTION_SUCCESS = 'AmazonSnsSubscriptionSucceeded';
@@ -25,10 +32,9 @@ class NotificationHandler implements BouncerHandlerInterface
     }
 
     /**
-     * @param Request $request
-     * @return int
+     * {@inheritdoc}
      */
-    public function handleRequest(Request $request)
+    public function handleRequest(Request $request, Credentials $credentials)
     {
         if (!$request->isMethod('POST')) {
             return 405;
@@ -36,7 +42,7 @@ class NotificationHandler implements BouncerHandlerInterface
 
         try {
             $data = json_decode($request->getContent(), true);
-            $message = Message::fromArray($data);
+            $message = new Message($data);
             $validator = new MessageValidator();
             $validator->validate($message);
         } catch (\Exception $e) {
@@ -46,22 +52,20 @@ class NotificationHandler implements BouncerHandlerInterface
         if (isset($data['Message'])) {
             $message = json_decode($data['Message'], true);
             if (!is_null($message)) {
-
                 if (isset($message['notificationType']) && $message['notificationType'] == self::MESSAGE_TYPE_SUBSCRIPTION_SUCCESS) {
                     return 200;
                 }
 
-                if (isset($message['notificationType']) && $message['notificationType'] == self::MESSAGE_TYPE_BOUNCE)
-                {
+                if (isset($message['notificationType']) && $message['notificationType'] == self::MESSAGE_TYPE_BOUNCE) {
                     foreach ($message['bounce']['bouncedRecipients'] as $bounceRecipient) {
                         $email = $bounceRecipient['emailAddress'];
                         $bounce = $this->repo->findBounceByEmail($email);
                         if ($bounce instanceof Bounce) {
                             $bounce->incrementBounceCounter();
                             $bounce->setLastTimeBounce(new \DateTime());
-                            $bounce->setPermanent(($message['bounce']['bounceType']=='Permanent'));
+                            $bounce->setPermanent(($message['bounce']['bounceType'] == 'Permanent'));
                         } else {
-                            $bounce = new Bounce($email, new \DateTime(), 1, ($message['bounce']['bounceType']=='Permanent'));
+                            $bounce = new Bounce($email, new \DateTime(), 1, ($message['bounce']['bounceType'] == 'Permanent'));
                         }
 
                         $this->repo->save($bounce);

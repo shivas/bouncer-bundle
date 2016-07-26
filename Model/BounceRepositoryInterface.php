@@ -1,16 +1,22 @@
 <?php
-namespace Shivas\BouncerBundle\Model;
 
+namespace SerendipityHQ\Bundle\AwsSesMonitorBundle\Model;
+
+/**
+ * Repository to manage Bounces.
+ */
 interface BounceRepositoryInterface
 {
     /**
      * @param $email
+     *
      * @return Bounce|null
      */
     public function findBounceByEmail($email);
 
     /**
      * @param Bounce $bounce
+     *
      * @return mixed
      */
     public function save(Bounce $bounce);

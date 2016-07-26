@@ -1,34 +1,41 @@
 {
-    "name": "shivas/bouncer-bundle",
+    "name": "serendipity_hq/aws-ses-monitor-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony2 bundle for AWS SES/SNS Bounce topic listener and swiftmailer filter",
-    "keywords": ["aws", "ses", "sns", "bounce", "blacklist", "swiftmailer"],
-    "homepage": "https://github.com/shivas/bouncer-bundle",
+    "description": "Symfony 2.8 bundle to monitor AWS SES bounces and complaints. Includes SwiftMailer filters.",
+    "keywords": ["aws", "ses", "sns", "bounce", "complaints", "blacklist", "swiftmailer"],
+    "homepage": "https://github.com/Aerendir/aws-ses-bouncer-bundle",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/shivas/bouncer-bundle/issues",
-        "wiki": "https://github.com/shivas/bouncer-bundle/wiki"
+        "issues": "https://github.com/Aerendir/aws-ses-monitor-bundle/issues"
     },
     "authors": [
         {
             "name": "Audrius Karabanovas",
             "email": "audrius@karabanovas.net"
+        },
+        {
+            "name": "Adamo Aerendir Crespi",
+            "email": "hello@aerendir.me"
         }
     ],
     "require": {
-        "php": ">=5.4.0",
-        "symfony/framework-bundle": "~2.5",
-        "aws/aws-sdk-php": "~2.7",
+        "php": "^5.6|^7.0",
+        "aws/aws-sdk-php": "^3.2",
+        "aws/aws-php-sns-message-validator": "*",
+        "doctrine/orm": "~2.5",
+        "symfony/framework-bundle": "~2",
         "symfony/swiftmailer-bundle": "~2.3"
     },
     "require-dev": {
+        "codeclimate/php-test-reporter": "dev-master",
+        "doctrine/doctrine-bundle": "*",
         "doctrine/common": "~2.4",
         "symfony/yaml": "~2.5",
 	    "symfony/console": "~2.5",
-        "phpunit/phpunit": "~4.5"
+        "phpunit/phpunit": "~5"
     },
     "autoload": {
-        "psr-4": { "Shivas\\BouncerBundle\\": "" }
+        "psr-4": { "SerendipityHQ\\Bundle\\AwsSesMonitorBundle\\": "" }
     },
     "minimum-stability": "dev",
     "prefer-stable": true
